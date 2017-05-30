@@ -1,7 +1,9 @@
 import sys
-from PyQt5.QtWidgets import QMainWindow, QApplication, QDesktopWidget, QMessageBox, QAction, QStyle
+from PyQt5.QtWidgets import QMainWindow, QApplication, QDesktopWidget, QMessageBox, QAction, QStyle, QGridLayout, \
+    QPushButton, QLabel, QWidget
 from PyQt5.QtGui import QIcon
 from Windows import AboutWindow, ReporterWindow, OrganismsWindow, InstructionWindow
+from Worlds.World import World
 
 
 class MainWindow(QMainWindow):
@@ -14,8 +16,10 @@ class MainWindow(QMainWindow):
         self.reporter_window = None
         self.organisms_window = None
         self.instruction_window = None
+        self.world = None
 
     def init_ui(self):
+
         self.statusBar().showMessage('Ready')
         self.setWindowTitle('Virtual world by Kamil Królikowski 165253')
         self.setWindowIcon(self.main_icon)
@@ -99,6 +103,18 @@ class MainWindow(QMainWindow):
             ]
         )
 
+        central_widget = QWidget()
+        grid = QGridLayout()
+        grid.setSpacing(0)
+        button = QPushButton('button')
+        for x in range(20):
+            for y in range(20):
+                button = QPushButton('b')
+                button.setFixedSize(40, 40)
+                grid.addWidget(button, x, y)
+
+        central_widget.setLayout(grid)
+        self.setCentralWidget(central_widget)
         self.show()
 
     def center(self):
@@ -116,6 +132,7 @@ class MainWindow(QMainWindow):
             event.ignore()
 
     def new_game(self):
+        self.world = World(self)
         pass
 
     def open_game(self):
