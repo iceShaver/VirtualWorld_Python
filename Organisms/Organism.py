@@ -1,5 +1,6 @@
 from enum import Enum
 
+
 class ResistType(Enum):
     SURRENDER = 0
     MOVE_TO_PREVIOUS_PLACE = 1
@@ -9,16 +10,14 @@ class ResistType(Enum):
     MOVE_AROUND_ME = 5
 
 
-
-
 class Organism:
-    def __init__(self, strength, age, initiative, x, y, world):
+    def __init__(self, strength, initiative, position, world):
         self.strength = strength
-        self.age = age
+        self.age = 0
         self.initiative = initiative
-        self.x = x
-        self.y = y
+        self.position = position
         self.world = world
+        self.world.new_message("pojawia się", self)
 
     def __cmp__(self, other):
         if self.initiative == other.initiative:
@@ -28,7 +27,7 @@ class Organism:
     def act(self):  # abstract
         pass
 
-    def handle_collision(self, other):   # abstract
+    def handle_collision(self, other):  # abstract
         pass
 
     def resist_attack(self, other):
@@ -36,9 +35,7 @@ class Organism:
             return ResistType.KILL
         return ResistType.SURRENDER
 
-
     def __str__(self):
-        return self.__class__.__name__ + ' '+\
-            '('+self.x+','+self.y+') '+self.strength+' '+\
-            self.initiative + self.age
-
+        return self.__class__.__name__ + ' ' + \
+               '(' + self.position.x + ',' + self.position.y + ') ' + self.strength + ' ' + \
+               self.initiative + self.age
