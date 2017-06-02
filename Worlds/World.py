@@ -28,14 +28,14 @@ class Position:
 
 
 class World:
-    def __init__(self, main_window, width, height):
+    def __init__(self, name, width, height, main_window):
         self.main_window = main_window
         self.organisms_priority_list = []
         self.organism_array = [[None for i in range(width)] for i in range(height)]
         self.width = width
         self.height = height
+        self.name = name
         self.randomize_organisms()
-        self.read_organisms_images()
         self.reporter = Reporter()
 
     def randomize_organisms(self):

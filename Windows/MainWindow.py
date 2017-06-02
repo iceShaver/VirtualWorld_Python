@@ -2,7 +2,7 @@ import sys
 from PyQt5.QtWidgets import QMainWindow, QApplication, QDesktopWidget, QMessageBox, QAction, QStyle, QGridLayout, \
     QPushButton, QLabel, QWidget
 from PyQt5.QtGui import QIcon
-from Windows import AboutWindow, ReporterWindow, OrganismsWindow, InstructionWindow
+from Windows import AboutWindow, ReporterWindow, OrganismsWindow, InstructionWindow, NewGameDialog
 from Worlds.World import World
 
 
@@ -16,6 +16,7 @@ class MainWindow(QMainWindow):
         self.reporter_window = None
         self.organisms_window = None
         self.instruction_window = None
+        self.new_game_window = None
         self.world = None
 
     def init_ui(self):
@@ -103,18 +104,7 @@ class MainWindow(QMainWindow):
             ]
         )
 
-        central_widget = QWidget()
-        grid = QGridLayout()
-        grid.setSpacing(0)
-        button = QPushButton('button')
-        for x in range(20):
-            for y in range(20):
-                button = QPushButton('b')
-                button.setFixedSize(40, 40)
-                grid.addWidget(button, x, y)
 
-        central_widget.setLayout(grid)
-        self.setCentralWidget(central_widget)
         self.show()
 
     def center(self):
@@ -131,9 +121,21 @@ class MainWindow(QMainWindow):
         else:
             event.ignore()
 
+
     def new_game(self):
-        self.world = World(self)
-        pass
+        name, width, height, ok = NewGameDialog.NewGameDialog.get_world_params(self)
+        if ok:
+            self.world = World(name, width, height, self)
+            central_widget = QWidget()
+            self.world_display_grid = QGridLayout()
+            self.world_display_grid.setSpacing(0)
+            buttons = [[QPushButton() for i in range(width)] for i in range(height)]
+            self.world_display_grid.addWidget()
+
+            central_widget.setLayout(self.world_display_grid)
+            self.setCentralWidget(central_widget)
+
+
 
     def open_game(self):
         pass
