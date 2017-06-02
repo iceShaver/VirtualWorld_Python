@@ -24,6 +24,9 @@ class Organism:
             return self.age > other.age
         return self.initiative > other.initiative
 
+    def __eq__(self, other):
+        return self.position == other.position
+
     def act(self):  # abstract
         pass
 

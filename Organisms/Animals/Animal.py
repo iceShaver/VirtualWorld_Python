@@ -9,7 +9,7 @@ class Animal(Organism):
         super().__init__(strength, initiative, position, world)
 
     def act(self):
-        new_position = self.world.get_random_position(self.position, 1, NeighbourPlaceSearchMode.ALL)
+        new_position = self.world.get_random_neighbour_position(self.position, 1, NeighbourPlaceSearchMode.ALL)
         if new_position is None:
             return
         if self.world.get_organism(new_position) is not None:
