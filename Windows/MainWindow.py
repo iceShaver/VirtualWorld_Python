@@ -2,6 +2,8 @@ import sys
 from PyQt5.QtWidgets import QMainWindow, QApplication, QDesktopWidget, QMessageBox, QAction, QStyle, QGridLayout, \
     QPushButton, QLabel, QWidget
 from PyQt5.QtGui import QIcon
+
+from Utilites.Field import Field
 from Windows import AboutWindow, ReporterWindow, OrganismsWindow, InstructionWindow, NewGameDialog
 from Worlds.World import World
 
@@ -18,6 +20,7 @@ class MainWindow(QMainWindow):
         self.instruction_window = None
         self.new_game_window = None
         self.world = None
+        self.world_display_grid = None
 
     def init_ui(self):
 
@@ -26,12 +29,12 @@ class MainWindow(QMainWindow):
         self.setWindowIcon(self.main_icon)
         self.resize(1024, 768)
         self.center()
-        next_round_action = QAction('Next round', self)
-        next_round_action.setShortcut("Space")
-        next_round_action.setIcon(self.style().standardIcon(QStyle.SP_ArrowRight))
-        next_round_action.setStatusTip('Play the next round')
-        next_round_action.triggered.connect(self.play_next_round)
-        next_round_action.setEnabled(False)
+        self.next_round_action = QAction('Next round', self)
+        self.next_round_action.setShortcut("Space")
+        self.next_round_action.setIcon(self.style().standardIcon(QStyle.SP_ArrowRight))
+        self.next_round_action.setStatusTip('Play the next round')
+        self.next_round_action.triggered.connect(self.play_next_round)
+        self.next_round_action.setEnabled(False)
         new_game_action = QAction('&New game', self)
         new_game_action.setShortcut('Ctrl+N')
         new_game_action.setIcon(self.style().standardIcon(QStyle.SP_FileIcon))
@@ -53,7 +56,7 @@ class MainWindow(QMainWindow):
         quit_action.setStatusTip('Quit the game')
         quit_action.triggered.connect(self.quit)
         self.menuBar().addMenu('&Game').addActions(
-            [next_round_action,
+            [self.next_round_action,
              new_game_action,
              open_game_action,
              save_game_action,
@@ -92,7 +95,7 @@ class MainWindow(QMainWindow):
         )
         self.addToolBar('Menu').addActions(
             [
-                next_round_action,
+                self.next_round_action,
                 new_game_action,
                 open_game_action,
                 save_game_action,
@@ -103,8 +106,6 @@ class MainWindow(QMainWindow):
                 quit_action
             ]
         )
-
-
         self.show()
 
     def center(self):
@@ -129,12 +130,13 @@ class MainWindow(QMainWindow):
             central_widget = QWidget()
             self.world_display_grid = QGridLayout()
             self.world_display_grid.setSpacing(0)
-            buttons = [[QPushButton() for i in range(width)] for i in range(height)]
-            self.world_display_grid.addWidget()
-
+            # self.world_display_grid.addWidget()
+            for x, row in enumerate(self.world.fields):
+                for y, button in enumerate(row):
+                    self.world_display_grid.addWidget(button, x, y)
             central_widget.setLayout(self.world_display_grid)
             self.setCentralWidget(central_widget)
-
+            self.next_round_action.setEnabled(True)
 
 
     def open_game(self):

@@ -1,8 +1,10 @@
 from enum import Enum
 import copy
 from Organisms.Organism import Organism
+from Utilites.Field import Field
 from Utilites.Reporter import Reporter
 import random
+
 
 class NeighbourPlaceSearchMode(Enum):
     ALL = 0
@@ -31,7 +33,7 @@ class World:
     def __init__(self, name, width, height, main_window):
         self.main_window = main_window
         self.organisms_priority_list = []
-        self.organism_array = [[None for i in range(width)] for i in range(height)]
+        self.fields = [[Field(main_window) for i in range(width)] for i in range(height)]
         self.width = width
         self.height = height
         self.name = name
@@ -44,23 +46,22 @@ class World:
     def add_organism(self, organism):
         self.organisms_priority_list.append(organism)
         self.organisms_priority_list.sort()
-        self.organism_array[organism.position.x][organism.position.y] = organism
+        self.fields[organism.position.x][organism.position.y].add_organism(organism)
         pass
 
     def delete_organism(self, organism):
-        self.organism_array[organism.x][organism.y] = None
+        self.fields[organism.x][organism.y].organism = None
         self.organisms_priority_list.remove(organism)
         pass
 
     def move_organism(self, organism, position):
         old_position = copy.deepcopy(organism.position)
         organism.position = copy.deepcopy(position)
-        self.organism_array[position.x][position.y] = organism
-        self.organism_array[old_position.x][old_position.y] = None
+        self.fields[position.x][position.y].organism = organism
+        self.fields[old_position.x][old_position.y].organism = None
 
     def get_organism(self, position):
-        return self.organism_array[position.x][position.y]
-        pass
+        return self.fields[position.x][position.y].organism
 
     def new_message(self, message, main_organism=None, other_organism=None):
         self.reporter.new_message(message, main_organism, other_organism)
@@ -72,7 +73,6 @@ class World:
         if len(positions) ==1:
             return positions[0]
         return positions[random.randint(0, len(positions)-1)]
-
 
     def get_all_neighbour_positions(self, position, search_range, search_mode):
         rect = Rect()

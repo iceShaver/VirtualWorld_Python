@@ -1,11 +1,15 @@
 import random
 
+from PyQt5.QtGui import QIcon
+
 from Organisms.Animals.Animal import Animal
 from Organisms.Organism import ResistType
 from Worlds.World import NeighbourPlaceSearchMode
 
 
 class Antelope(Animal):
+    icon = QIcon('Antelope.png')
+
     def __init__(self, position, world):
         super().__init__(4, 4, position, world)
 
