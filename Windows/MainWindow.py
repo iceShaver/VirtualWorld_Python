@@ -2,10 +2,8 @@ import sys
 from PyQt5.QtWidgets import QMainWindow, QApplication, QDesktopWidget, QMessageBox, QAction, QStyle, QGridLayout, \
     QPushButton, QLabel, QWidget
 from PyQt5.QtGui import QIcon
-
-from Utilites.Field import Field
 from Windows import AboutWindow, ReporterWindow, OrganismsWindow, InstructionWindow, NewGameDialog
-from Worlds.World import World
+import Worlds.World
 
 
 class MainWindow(QMainWindow):
@@ -21,6 +19,7 @@ class MainWindow(QMainWindow):
         self.new_game_window = None
         self.world = None
         self.world_display_grid = None
+
 
     def init_ui(self):
 
@@ -124,9 +123,10 @@ class MainWindow(QMainWindow):
 
 
     def new_game(self):
+        self.load_icons()
         name, width, height, ok = NewGameDialog.NewGameDialog.get_world_params(self)
         if ok:
-            self.world = World(name, width, height, self)
+            self.world = Worlds.World.World(name, width, height, self)
             central_widget = QWidget()
             self.world_display_grid = QGridLayout()
             self.world_display_grid.setSpacing(0)
@@ -138,6 +138,21 @@ class MainWindow(QMainWindow):
             self.setCentralWidget(central_widget)
             self.next_round_action.setEnabled(True)
 
+    def load_icons(self):
+        self.icons = {
+            'Antelope': QIcon('./../img/Antelope.png'),
+            'CyberSheep': QIcon('./../img/CyberSheep.png'),
+            'Dandelion':QIcon('./../img/Dandelion.png'),
+            'DeadlyNightshade': QIcon('./../img/DeadlyNightshade.png'),
+            'Fox': QIcon('./../img/Fox.png'),
+            'Grass': QIcon('./../img/Grass.png'),
+            'Guarana': QIcon('./../img/Guarana.png'),
+            'HeracleumSosnowskyi': QIcon('./../img/HeracleumSosnowskyi.png'),
+            'Human': QIcon('./../img/Human.png'),
+            'Sheep': QIcon('./../img/Sheep.png'),
+            'Turtle': QIcon('./../img/Turtle.png'),
+            'Wolf': QIcon('./../img/Wolf.png')
+        }
 
     def open_game(self):
         pass
@@ -164,7 +179,7 @@ class MainWindow(QMainWindow):
         self.about_window = AboutWindow.AboutWindow()
 
     def play_next_round(self):
-        pass
+        self.world.play_round()
 
 
 if __name__ == '__main__':

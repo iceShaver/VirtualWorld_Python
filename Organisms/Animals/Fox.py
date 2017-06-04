@@ -1,6 +1,6 @@
 from Organisms.Animals.Animal import Animal
-from Worlds.World import NeighbourPlaceSearchMode
-
+# from Worlds.World import NeighbourPlaceSearchMode
+import Worlds.World
 
 class Fox(Animal):
     def __init__(self, position, world):
@@ -8,7 +8,7 @@ class Fox(Animal):
 
     def act(self):
         new_position = self.world.get_random_neighbour_position(self.position, 1,
-                                                                NeighbourPlaceSearchMode.EMPTY_OR_WITH_WEAK_ORGANISM)
+                                                                Worlds.World.NeighbourPlaceSearchMode.EMPTY_OR_WITH_WEAK_ORGANISM)
         if new_position is None:
             return
         organism_at_new_position = self.world.get_organism(new_position)

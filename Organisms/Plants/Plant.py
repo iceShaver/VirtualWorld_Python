@@ -1,7 +1,7 @@
 import random
-
+import Worlds.World
 from Organisms.Organism import Organism
-from Worlds.World import NeighbourPlaceSearchMode
+# from Worlds.World import NeighbourPlaceSearchMode
 
 
 class Plant(Organism):
@@ -10,10 +10,10 @@ class Plant(Organism):
 
     def act(self):
         if random.uniform(0, 1) < 0.01:
-            self.sow()
+            self._sow()
 
     def _sow(self):
-        new_position = self.world.get_random_neighbour_position(self.position, 1, NeighbourPlaceSearchMode.ONLY_EMPTY)
+        new_position = self.world.get_random_neighbour_position(self.position, 1, Worlds.World.NeighbourPlaceSearchMode.ONLY_EMPTY)
         if new_position is None:
             return
         self.world.add_organism(self.__class__(new_position, self.world))

@@ -4,17 +4,15 @@ from PyQt5.QtGui import QIcon
 
 from Organisms.Animals.Animal import Animal
 from Organisms.Organism import ResistType
-from Worlds.World import NeighbourPlaceSearchMode
-
-
+import Worlds.World
+import Worlds.World
 class Antelope(Animal):
-    icon = QIcon('Antelope.png')
-
+    # icon = QIcon('Antelope.png')
     def __init__(self, position, world):
         super().__init__(4, 4, position, world)
 
     def act(self):
-        new_position = self.world.get_random_neighbour_position(self.position, 2, NeighbourPlaceSearchMode.ALL)
+        new_position = self.world.get_random_neighbour_position(self.position, 2, Worlds.World.NeighbourPlaceSearchMode.ALL)
         if new_position is None:
             return
 
@@ -27,7 +25,7 @@ class Antelope(Animal):
 
     def resist_attack(self, other):
         if random.uniform(0, 1) < 0.5:
-            new_position = self.world.get_random_neighbour_position(self.position, 2, NeighbourPlaceSearchMode.ONLY_EMPTY)
+            new_position = self.world.get_random_neighbour_position(self.position, 2, Worlds.World.NeighbourPlaceSearchMode.ONLY_EMPTY)
             if new_position is not None:
                 self.world.move_organism(self, new_position)
                 return ResistType.ESCAPE

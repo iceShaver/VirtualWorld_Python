@@ -1,5 +1,5 @@
 from Organisms.Organism import Organism, ResistType
-from Worlds.World import NeighbourPlaceSearchMode, Position
+import Worlds.World
 import copy
 
 
@@ -9,7 +9,7 @@ class Animal(Organism):
         super().__init__(strength, initiative, position, world)
 
     def act(self):
-        new_position = self.world.get_random_neighbour_position(self.position, 1, NeighbourPlaceSearchMode.ALL)
+        new_position = self.world.get_random_neighbour_position(self.position, 1, Worlds.World.NeighbourPlaceSearchMode.ALL)
         if new_position is None:
             return
         if self.world.get_organism(new_position) is not None:
@@ -57,12 +57,12 @@ class Animal(Organism):
             self.strength += 3
             self.world.new_message("> ", self, other)
             self.world.delete_organism(other)
-            self.world.new_message("siła rośnie do " + self.strength, self)
+            self.world.new_message("siła rośnie do " + str(self.strength), self)
             self.world.move_organism(self, new_position)
             return
 
         if resist_result == ResistType.MOVE_AROUND_ME:
             new_random_position = self.world.get_random_neighbour_position(other.position, 1,
-                                                                           NeighbourPlaceSearchMode.ONLY_EMPTY)
+                                                                           Worlds.World.NeighbourPlaceSearchMode.ONLY_EMPTY)
             if new_random_position is not None:
                 self.world.move_organism(self, new_random_position)
