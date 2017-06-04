@@ -1,9 +1,18 @@
 import sys
+from PyQt5 import QtGui
+from PyQt5.QtCore import Qt
+
 from PyQt5.QtWidgets import QMainWindow, QApplication, QDesktopWidget, QMessageBox, QAction, QStyle, QGridLayout, \
     QPushButton, QLabel, QWidget
 from PyQt5.QtGui import QIcon
 from Windows import AboutWindow, ReporterWindow, OrganismsWindow, InstructionWindow, NewGameDialog
 import Worlds.World
+import pickle
+
+# TODO: age increase DONE
+# TODO: human special DONE
+# TODO: saving/opening game state
+# TODO: CyberSheep implementation DONE
 
 
 class MainWindow(QMainWindow):
@@ -19,7 +28,7 @@ class MainWindow(QMainWindow):
         self.new_game_window = None
         self.world = None
         self.world_display_grid = None
-
+        self.game_started = False
 
     def init_ui(self):
 
@@ -121,7 +130,6 @@ class MainWindow(QMainWindow):
         else:
             event.ignore()
 
-
     def new_game(self):
         self.load_icons()
         name, width, height, ok = NewGameDialog.NewGameDialog.get_world_params(self)
@@ -131,18 +139,19 @@ class MainWindow(QMainWindow):
             self.world_display_grid = QGridLayout()
             self.world_display_grid.setSpacing(0)
             # self.world_display_grid.addWidget()
-            for x, row in enumerate(self.world.fields):
-                for y, button in enumerate(row):
+            for y, row in enumerate(self.world.fields):
+                for x, button in enumerate(row):
                     self.world_display_grid.addWidget(button, x, y)
             central_widget.setLayout(self.world_display_grid)
             self.setCentralWidget(central_widget)
             self.next_round_action.setEnabled(True)
+            self.game_started = True
 
     def load_icons(self):
         self.icons = {
             'Antelope': QIcon('./../img/Antelope.png'),
             'CyberSheep': QIcon('./../img/CyberSheep.png'),
-            'Dandelion':QIcon('./../img/Dandelion.png'),
+            'Dandelion': QIcon('./../img/Dandelion.png'),
             'DeadlyNightshade': QIcon('./../img/DeadlyNightshade.png'),
             'Fox': QIcon('./../img/Fox.png'),
             'Grass': QIcon('./../img/Grass.png'),
@@ -180,6 +189,11 @@ class MainWindow(QMainWindow):
 
     def play_next_round(self):
         self.world.play_round()
+
+    def keyPressEvent(self, e):
+        if self.game_started:
+            if 49 <= e.key() <= 57 or e.key() == Qt.Key_S:
+                self.world.handle_human_input(e)
 
 
 if __name__ == '__main__':

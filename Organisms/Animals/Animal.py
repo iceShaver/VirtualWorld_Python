@@ -9,7 +9,8 @@ class Animal(Organism):
         super().__init__(strength, initiative, position, world)
 
     def act(self):
-        new_position = self.world.get_random_neighbour_position(self.position, 1, Worlds.World.NeighbourPlaceSearchMode.ALL)
+        new_position = self.world.get_random_neighbour_position(self.position, 1,
+                                                                Worlds.World.NeighbourPlaceSearchMode.ALL)
         if new_position is None:
             return
         if self.world.get_organism(new_position) is not None:
@@ -21,14 +22,14 @@ class Animal(Organism):
         self.world.new_message("kolizja z ", self, other)
 
         if self.__class__ is other.__class__:  # the same organisms -> spawn
-            new_random_position = self.world.get_random_neighbour_position(self.position, 1, Position,
-                                                                           NeighbourPlaceSearchMode.ONLY_EMPTY)
+            new_random_position = self.world.get_random_neighbour_position(self.position, 1,
+                                                                           Worlds.World.NeighbourPlaceSearchMode.ONLY_EMPTY)
             if new_random_position is None:
                 return
 
             new_organism = self.__class__(new_random_position, self.world)
             self.world.add_organism(new_organism)
-            self.world.new_message("rodzi się", new_organism)
+            # self.world.new_message("rodzi się", new_organism)
             return
         new_position = copy.deepcopy(other.position)
         resist_result = other.resist_attack(self)
@@ -39,7 +40,7 @@ class Animal(Organism):
             return
 
         if resist_result == ResistType.SURRENDER:
-            self.world.new_message("< ", self, other)
+            self.world.new_message("> ", self, other)
             self.world.delete_organism(other)
             self.world.move_organism(self, new_position)
             return
@@ -62,6 +63,7 @@ class Animal(Organism):
             return
 
         if resist_result == ResistType.MOVE_AROUND_ME:
+            self.world.new_message('odstrasza ', other, self)
             new_random_position = self.world.get_random_neighbour_position(other.position, 1,
                                                                            Worlds.World.NeighbourPlaceSearchMode.ONLY_EMPTY)
             if new_random_position is not None:

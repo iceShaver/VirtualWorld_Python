@@ -1,5 +1,9 @@
 from enum import Enum
 import copy
+
+from PyQt5.QtCore import Qt
+from math import floor, sqrt
+
 import Organisms.Animals.Antelope
 import Organisms.Animals.Turtle
 import Organisms.Animals.Sheep
@@ -48,21 +52,41 @@ class World:
         self.height = height
         self.name = name
         self.reporter = Reporter()
+        self.human = None
         self.randomize_organisms()
 
+    def __getstate__(self):
+        return self.organisms_priority_list, \
+               self.width, \
+               self.height, \
+               self.name, \
+               self.reporter, \
+               self.human
+
+    def __setstate__(self, state):
+        self.organisms_priority_list, \
+        self.width, \
+        self.height, \
+        self.name, \
+        self.reporter, \
+        self.human = state
+
     def randomize_organisms(self):
-        self.add_organism(Organisms.Animals.Antelope.Antelope(self.get_random_empty_position(), self))
-        self.add_organism(Organisms.Animals.CyberSheep.CyberSheep(self.get_random_empty_position(), self))
-        self.add_organism(Organisms.Animals.Fox.Fox(self.get_random_empty_position(), self))
-        self.add_organism(Organisms.Animals.Human.Human(self.get_random_empty_position(), self))
-        self.add_organism(Organisms.Animals.Sheep.Sheep(self.get_random_empty_position(), self))
-        self.add_organism(Organisms.Animals.Turtle.Turtle(self.get_random_empty_position(), self))
-        self.add_organism(Organisms.Animals.Wolf.Wolf(self.get_random_empty_position(), self))
-        self.add_organism(Organisms.Plants.Dandelion.Dandelion(self.get_random_empty_position(), self))
-        self.add_organism(Organisms.Plants.DeadlyNightshade.DeadlyNightshade(self.get_random_empty_position(), self))
-        self.add_organism(Organisms.Plants.HeracleumSosnowskyi.HeracleumSosnowskyi(self.get_random_empty_position(), self))
-        self.add_organism(Organisms.Plants.Guarana.Guarana(self.get_random_empty_position(), self))
-        self.add_organism(Organisms.Plants.Grass.Grass(self.get_random_empty_position(), self))
+        self.human = Organisms.Animals.Human.Human(self.get_random_empty_position(), self)
+        self.add_organism(self.human)
+        for i in range(2):
+            self.add_organism(Organisms.Animals.Antelope.Antelope(self.get_random_empty_position(), self))
+            self.add_organism(Organisms.Animals.CyberSheep.CyberSheep(self.get_random_empty_position(), self))
+            self.add_organism(Organisms.Animals.Fox.Fox(self.get_random_empty_position(), self))
+            self.add_organism(Organisms.Animals.Sheep.Sheep(self.get_random_empty_position(), self))
+            self.add_organism(Organisms.Animals.Turtle.Turtle(self.get_random_empty_position(), self))
+            self.add_organism(Organisms.Animals.Wolf.Wolf(self.get_random_empty_position(), self))
+            self.add_organism(Organisms.Plants.Dandelion.Dandelion(self.get_random_empty_position(), self))
+            self.add_organism(Organisms.Plants.DeadlyNightshade.DeadlyNightshade(self.get_random_empty_position(), self))
+            self.add_organism(
+                Organisms.Plants.HeracleumSosnowskyi.HeracleumSosnowskyi(self.get_random_empty_position(), self))
+            self.add_organism(Organisms.Plants.Guarana.Guarana(self.get_random_empty_position(), self))
+            self.add_organism(Organisms.Plants.Grass.Grass(self.get_random_empty_position(), self))
 
     def add_organism(self, organism):
         self.organisms_priority_list.append(organism)
@@ -71,6 +95,9 @@ class World:
         pass
 
     def delete_organism(self, organism):
+        if isinstance(organism, Organisms.Animals.Human.Human):
+            self.human = None
+        self.new_message('umiera ', organism)
         self.fields[organism.position.x][organism.position.y].remove_organism()
         self.organisms_priority_list.remove(organism)
         pass
@@ -82,6 +109,8 @@ class World:
         self.fields[old_position.x][old_position.y].remove_organism()
 
     def get_organism(self, position):
+        if position.x >= self.width or position.y >= self.height:
+            pass
         return self.fields[position.x][position.y].organism
 
     def new_message(self, message, main_organism=None, other_organism=None):
@@ -90,6 +119,17 @@ class World:
     def play_round(self):
         for organism in self.organisms_priority_list:
             organism.act()
+            organism.age += 1
+
+    def handle_human_input(self, e):
+        if self.human is not None:
+            self.human.handle_input(e)
+
+    @staticmethod
+    def calculate_distance(organism1, organism2):
+        a = organism1.position.x - organism2.position.x
+        b = organism1.position.y - organism2.position.y
+        return floor(sqrt((a ** 2) + (b ** 2)))
 
     def get_random_empty_position(self):
         while True:
@@ -98,6 +138,12 @@ class World:
             position = Position(rand_x, rand_y)
             if self.get_organism(position) is None:
                 return position
+
+    def check_if_position_is_valid(self, position):
+        if position.x < 0 or position.x >= self.width \
+                or position.y < 0 or position.y >= self.height:
+            return False
+        return True
 
     def get_random_neighbour_position(self, position, search_range, search_mode):
         positions = self.get_all_neighbour_positions(position, search_range, search_mode)
@@ -117,9 +163,9 @@ class World:
             rect.left += 1
         while rect.top < 0:
             rect.top += 1
-        while rect.right > self.width - 1:
+        while rect.right >= self.width:
             rect.right -= 1
-        while rect.bottom > self.height - 1:
+        while rect.bottom >= self.height:
             rect.bottom -= 1
 
         tmp_position = Position(rect.left, rect.top)
@@ -130,7 +176,7 @@ class World:
                 if self.get_organism(tmp_position) is None:
                     where_can_move.append(Position(tmp_position.x, tmp_position.y))
                 if tmp_position.x >= rect.right:
-                    if tmp_position.y > rect.bottom:
+                    if tmp_position.y >= rect.bottom:
                         if self.get_organism(tmp_position) is None:
                             where_can_move.append(Position(tmp_position.x, tmp_position.y))
                         break

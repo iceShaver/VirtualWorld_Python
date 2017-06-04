@@ -30,7 +30,7 @@ class Organism:
     def __lt__(self, other):
         if self.initiative == other.initiative:
             return self.age < other.age
-        return  self.initiative < other.initiative
+        return self.initiative < other.initiative
 
     def __eq__(self, other):
         return self.position == other.position
@@ -46,8 +46,7 @@ class Organism:
             return ResistType.KILL
         return ResistType.SURRENDER
 
-
     def __str__(self):
         return self.__class__.__name__ + ' ' + \
                '(' + str(self.position.x) + ',' + str(self.position.y) + ') ' + str(self.strength) + ' ' + \
-               str(self.initiative) + str(self.age)
+               str(self.initiative) + ' ' + str(self.age)
